@@ -1,0 +1,221 @@
+(load "init.repl")
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"op", 'caps:[(INIT-TREE)] }])
+(env-data {'ks-access:["access"], 'ks-access-2:["access-2"] })
+(init-tree "My-Tree" (read-keyset 'ks-access) 100000000000.0)
+(init-tree "My-Second-Tree" (read-keyset 'ks-access-2) 100000000000.0)
+(print "Module initalized")
+(commit-tx)
+
+
+
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)]},
+           {'key:"access-2", 'caps:[(INSERT-DELETE)]}])
+
+(insert-value "My-Tree" "B" 2.0)
+(insert-value "My-Tree" "A" 1.0)
+(insert-value "My-Tree" "D" 4.0)
+(insert-value "My-Tree" "E" 5.0)
+(insert-value "My-Tree" "C" 2.0)
+
+(insert-value "My-Second-Tree" "B-2" 2.0)
+(insert-value "My-Second-Tree" "A-2" 1.0)
+(insert-value "My-Second-Tree" "D-2" 4.0)
+(insert-value "My-Second-Tree" "E-2" 5.0)
+(insert-value "My-Second-Tree" "C-2" 2.0)
+
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B")) (next-node (first-node "My-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C")) (next-node (next-node (first-node "My-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D")) (next-node (next-node (next-node (first-node "My-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "A-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+(commit-tx)
+
+; Try to insert without the right key
+(begin-tx)
+(use rb-tree)
+(env-sigs [])
+(expect-failure "No key" "Keyset failure" (insert-value "My-Tree" "T" 2.0))
+
+(env-sigs [{'key:"access-2", 'caps:[(INSERT-DELETE)]}])
+(expect-failure "Bad key" "Keyset failure" (insert-value "My-Tree" "T" 2.0))
+
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)]}])
+(expect-failure "Bad key" "Keyset failure" (insert-value "My-Second-Tree" "T" 2.0))
+
+(rollback-tx)
+
+; Try to remove without the right key
+(begin-tx)
+(use rb-tree)
+(env-sigs [])
+(expect-failure "No key" "Keyset failure" (delete-value "A"))
+
+(env-sigs [{'key:"access-2", 'caps:[(INSERT-DELETE)]}])
+(expect-failure "Bad key" "Keyset failure" (delete-value "A"))
+
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)]}])
+(expect-failure "Bad key" "Keyset failure" (delete-value "A-2"))
+(rollback-tx)
+
+
+; Remove a value
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)] }])
+(delete-value "A")
+
+(expect      "1st Value" "B" (first-value "My-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "C")) (next-node (first-node "My-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "D")) (next-node (next-node (first-node "My-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "E")) (next-node (next-node (next-node (first-node "My-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "A-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+(rollback-tx)
+
+
+; Remove a value
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access-2", 'caps:[(INSERT-DELETE)] }])
+(delete-value "A-2")
+
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B")) (next-node (first-node "My-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C")) (next-node (next-node (first-node "My-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D")) (next-node (next-node (next-node (first-node "My-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "B-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "C-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "E-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+(rollback-tx)
+
+
+
+; Remove a value
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)] }])
+(delete-value "B")
+
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "C")) (next-node (first-node "My-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "D")) (next-node (next-node (first-node "My-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "E")) (next-node (next-node (next-node (first-node "My-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "A-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+(rollback-tx)
+
+; Remove a value
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)] }])
+(delete-value "C")
+
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B")) (next-node (first-node "My-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "D")) (next-node (next-node (first-node "My-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "E")) (next-node (next-node (next-node (first-node "My-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "A-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+(rollback-tx)
+
+
+; Remove a value
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)] }])
+(delete-value "D")
+
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B")) (next-node (first-node "My-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C")) (next-node (next-node (first-node "My-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "E")) (next-node (next-node (next-node (first-node "My-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "A-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+(rollback-tx)
+
+; Remove a value
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)] }])
+(delete-value "E")
+
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B")) (next-node (first-node "My-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C")) (next-node (next-node (first-node "My-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D")) (next-node (next-node (next-node (first-node "My-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "D")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "A-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+(rollback-tx)
+
+
+; Remove several values
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)] }])
+(delete-value "B")
+(delete-value "C")
+(delete-value "D")
+
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "Last Value" (compose (at 'id) (= "E")) (prev-node (last-node "My-Tree")))
+
+
+(expect      "1st Value" "A-2" (first-value "My-Second-Tree"))
+(expect-that "2nd Value" (compose (at 'id) (= "B-2")) (next-node (first-node "My-Second-Tree")))
+(expect-that "3rd Value" (compose (at 'id) (= "C-2")) (next-node (next-node (first-node "My-Second-Tree"))))
+(expect-that "4rd Value" (compose (at 'id) (= "D-2")) (next-node (next-node (next-node (first-node "My-Second-Tree")))))
+(expect-that "Last Value" (compose (at 'id) (= "E-2")) (prev-node (last-node "My-Second-Tree")))
+
+(delete-value "E")
+(expect      "1st Value" "A" (first-value "My-Tree"))
+(expect-that "Last Value" (compose (at 'id) (= "A")) (prev-node (last-node "My-Tree")))
+
+(delete-value "A")
+(expect      "1st = Last" true (= (first-value "My-Tree") (last-value "My-Tree")))
+(commit-tx)
