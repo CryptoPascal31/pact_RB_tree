@@ -135,6 +135,9 @@
   (defun is-root:bool (x:object{node-sch})
     (= (at 'parent x) NIL))
 
+  (defun is-base:bool (x:object{node-sch})
+    (= (at 'id x) (hash (at 't x))))
+
   (defun has-right-child:bool (x:object{node-sch})
     (!= NIL (at 'right-child x)))
 
@@ -372,6 +375,8 @@
 
   (defun delete-node:bool (node:object{node-sch})
     @doc "Delete a node"
+    ; Check that we are not removing the bas enode
+    (enforce (not? (is-base) node) "Removing the base node is not allowed")
     ; Get the node to replace and eventually swap it with a leaf
     (with-capability (INSERT-DELETE)
       (with-read trees (at 't node) {'write-guard:=g}

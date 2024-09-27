@@ -68,6 +68,14 @@
 (expect-failure "Bad key" "Keyset failure" (delete-value "A-2"))
 (rollback-tx)
 
+; Try to remove the base node
+(begin-tx)
+(use rb-tree)
+(env-sigs [{'key:"access", 'caps:[(INSERT-DELETE)] }])
+(expect-failure "Remove base node" "Removing the base node is not allowed" (delete-value (hash "My-Tree")))
+
+(rollback-tx)
+
 
 ; Remove a value
 (begin-tx)
