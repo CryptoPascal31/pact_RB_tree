@@ -3,10 +3,10 @@
   ; --------------------------- CAPABILITIES -----------------------------------
   ; ----------------------------------------------------------------------------
   (defcap GOVERNANCE ()
-    (enforce-keyset "RB_TREE_NS.rb_tree_governance"))
+    (enforce-keyset "RB_TREE_NS.rb-tree-admin"))
 
   (defcap INIT-TREE ()
-    (enforce-keyset "RB_TREE_NS.rb_tree_op")
+    (enforce-keyset "RB_TREE_NS.rb-tree-create")
     (compose-capability (WRITE-TREE)))
 
   (defcap WRITE-TREE ()
