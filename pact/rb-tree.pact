@@ -401,7 +401,7 @@
         (enforce-guard g))
       (enforce (!= id NIL) "Try to insert NIL value")
       (let* ((parent (fold (find-insert-position key) (get-root tree) ENUM-DEPTH))
-            (new-node (make-node tree parent id key (<= key (at 'key parent)))))
+            (new-node (make-node tree parent id key (< key (at 'key parent)))))
         (fix-red-violation new-node))
       true)
   )
