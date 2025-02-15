@@ -2,6 +2,14 @@ import json
 import sys
 from itertools import pairwise
 from more_itertools import ilen
+import re
+
+def extract_out(lines_in):
+    out_re = re.compile('.*"OUT:(.*)"')
+    for l in lines_in:
+        m = out_re.match(l)
+        if m:
+            yield m.group(1)
 
 to_str = "{0[key]:.3f} => '{0[value]:s}'".format
 
@@ -88,8 +96,7 @@ def print_sep():
 nodes = {}
 iteration = 0
 
-for line in sys.stdin:
-
+for line in extract_out(sys.stdin):
     try:
         data = json.loads(line)
     except:

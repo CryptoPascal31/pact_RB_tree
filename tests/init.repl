@@ -1,3 +1,5 @@
+(enforce-pact-version "5.0")
+
 (env-data {"disable-test-accounts":true, "disable-marmalade":true})
 (load "kadena_repl_sandbox/kda-env/init.repl")
 
@@ -11,5 +13,4 @@
 (load "../pact/rb-tree.pact")
 (create-table nodes)
 (create-table trees)
-(typecheck 'rb-tree)
 (commit-tx)

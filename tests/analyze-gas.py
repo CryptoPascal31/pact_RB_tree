@@ -2,7 +2,14 @@ import json
 import sys
 from itertools import pairwise
 from more_itertools import ilen
+import re
 
+def extract_out(lines_in):
+    out_re = re.compile('.*"OUT:(.*)"')
+    for l in lines_in:
+        m = out_re.match(l)
+        if m:
+            yield m.group(1)
 
 def print_stats(name, vals, vals_total):
     print(name)
@@ -17,7 +24,7 @@ total_insert = []
 total_remove = []
 iteration = 0
 
-for line in sys.stdin:
+for line in extract_out(sys.stdin):
     try:
         data = json.loads(line)
 
