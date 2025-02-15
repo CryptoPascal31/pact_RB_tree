@@ -99,13 +99,13 @@ With `MAX-DEPTH`= 24:
 
 | Tree Size           | 100 nodes | 1000 nodes | 10,000 nodes |
 | :-------------------|--------:  |----------: | -----------: |
-| Insertion (min)     | 950       | 1000       | 1040         |
-| Insertion (average) | 1490      | 1560       | 1680         |
-| Insertion (max)     | 3980      | 4620       | 6400         |
-| Removal (min)       | 390       | 390        | 390          |
-| Removal (average)   | 1260      | 1260       | 1260         |
-| Removal (max)       | 4410      | 5200       | 5200         |
+| Insertion (min)     | 282       | 338        | 385          |
+| Insertion (average) | 511       | 558        | 642          |
+| Insertion (max)     | 1615      | 1690       | 2202         |
+| Removal (min)       | 111       | 111        | 111          |
+| Removal (average)   | 379       | 381        | 376          |
+| Removal (max)       | 1455      | 1615       | 1615         |
 
-Empirically tested over:
+Empirically tested with **Pact 5.0** over:
   - 5,000 insertions/removals for 100 nodes
   - 10,000 insertions/removals for 1000 and 10,000 nodes
