@@ -52,8 +52,8 @@ for i in range(100):
     random.shuffle(in_tree)
     to_remove = in_tree[-PER_ITERATION:]
     in_tree = in_tree[:-PER_ITERATION]
-    print_defconst_insert("TEST-100-{:d}".format(i), to_insert)
-    print_defconst_remove("TEST-100-{:d}".format(i), to_remove)
+    print_defconst_insert("TEST-100-{:02d}".format(i), to_insert)
+    print_defconst_remove("TEST-100-{:02d}".format(i), to_remove)
 
 
 print(")")
