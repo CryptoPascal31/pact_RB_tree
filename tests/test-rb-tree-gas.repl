@@ -19,8 +19,6 @@
 
 (env-enable-repl-natives true)
 
-
-
 (module test-gas G
   (defcap G () true)
   (use rb-tree)
@@ -140,52 +138,5 @@
 (print (do-test-s REFS-TEST-100-97 KEYS-TEST-100-97 REFS-REMOVE-TEST-100-97))
 (print (do-test-s REFS-TEST-100-98 KEYS-TEST-100-98 REFS-REMOVE-TEST-100-98))
 (print (do-test-s REFS-TEST-100-99 KEYS-TEST-100-99 REFS-REMOVE-TEST-100-99))
-
-
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-2 test-vectors.KEYS-2))
-;      ;(v2 (map (lambda (_) (let ((_ 0))
-;      ;                          (env-gas 0)
-;      ;                          (map (lambda (_) (delete-node (first-node "MyTree"))) (enumerate 1 10))
-;      ;                          (env-gas))) (enumerate 1 300)))) ;Test Head node removal
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas)))  test-vectors.REFS-REMOVE-0))) ;
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-3 test-vectors.KEYS-3))
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas)))  test-vectors.REFS-REMOVE-1)))
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-4 test-vectors.KEYS-4))
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas))) test-vectors.REFS-REMOVE-2)))
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-5 test-vectors.KEYS-5))
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas))) test-vectors.REFS-REMOVE-3)))
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-6 test-vectors.KEYS-6))
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas)))  test-vectors.REFS-REMOVE-4)))
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-7 test-vectors.KEYS-7))
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas)))  test-vectors.REFS-REMOVE-5)))
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-8 test-vectors.KEYS-8))
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas)))  test-vectors.REFS-REMOVE-6)))
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-;
-;(let ((v1 (zip (lambda (x y) (let ((_ 0)) (env-gas 0) (insert-value "MyTree" x y) (env-gas))) test-vectors.REFS-9 test-vectors.KEYS-9))
-;      (v2 (map (lambda (x) (let ((_ 0)) (env-gas 0) (delete-value x) (env-gas)))  test-vectors.REFS-REMOVE-7)))
-;  (print (format "{}" [{'insert:v1, 'remove:v2}]))
-;)
-
 
 (commit-tx)
